@@ -21,10 +21,10 @@ public class SessionService {
         VotingSession session = new VotingSession();
         session.setTitle(title);
         session.setStartTime(LocalDateTime.now());
-        session.setEndTime(LocalDateTime.now().plusMinutes(durationMinutes)); // auto close
+        session.setEndTime(LocalDateTime.now().plusMinutes(durationMinutes)); 
         return votingSessionRepository.save(session).getId();
     }
-    @Scheduled(fixedRate = 60000) // runs every 1 min
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void autoCloseExpiredSessions() {
         List<VotingSession> sessions = votingSessionRepository.findByIsActiveTrue();

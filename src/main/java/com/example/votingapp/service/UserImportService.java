@@ -35,12 +35,11 @@ public class UserImportService {
         }
     }
 
-    // CSV Import
     private List<User> importUsersFromCSV(MultipartFile file) throws IOException {
         List<User> users = new ArrayList<>();
         CSVFormat format = CSVFormat.DEFAULT.builder()
-                .setHeader()              // replaces withFirstRecordAsHeader()
-                .setSkipHeaderRecord(true) // skip the header row
+                .setHeader()              
+                .setSkipHeaderRecord(true) 
                 .setIgnoreHeaderCase(true)
                 .setTrim(true)
                 .build();
@@ -61,7 +60,6 @@ public class UserImportService {
         return saveValidUsers(users);
     }
 
-    // Excel Import
     private List<User> importUsersFromExcel(MultipartFile file) throws IOException {
         List<User> users = new ArrayList<>();
 

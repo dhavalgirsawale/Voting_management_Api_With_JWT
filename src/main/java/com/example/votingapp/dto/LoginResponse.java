@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LoginResponse {
-    private String token;      // JWT
+    private String token;      
     private String userId;
     private boolean admin;
     private boolean canVote;

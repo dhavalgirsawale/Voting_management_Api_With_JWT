@@ -20,13 +20,13 @@ public class VotingSession {
     private boolean isActive = true;
     
     private LocalDateTime startTime = LocalDateTime.now();
-    private LocalDateTime endTime; // new field for auto-close
+    private LocalDateTime endTime; 
     
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonIgnore // Add this to break the cycle
+    @JsonIgnore 
     private List<VoteOption> options;
     
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonIgnore // Add this to break the cycle
+    @JsonIgnore
     private List<Vote> votes;
 }

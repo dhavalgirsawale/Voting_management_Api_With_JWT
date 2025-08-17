@@ -91,14 +91,12 @@ public class AdminController {
                 return ResponseEntity.badRequest().body("Please select a file to upload");
             }
 
-            // Check file type
             String fileName = file.getOriginalFilename();
             if (fileName == null || 
                !(fileName.endsWith(".csv") || fileName.endsWith(".xlsx") || fileName.endsWith(".xls"))) {
                 return ResponseEntity.badRequest().body("Only CSV or Excel files are allowed");
             }
 
-            // Import users
             List<User> importedUsers = userImportService.importUsers(file);
 
             return ResponseEntity.ok(

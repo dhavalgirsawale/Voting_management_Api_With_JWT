@@ -16,11 +16,11 @@ public class VoteOption {
     private int voteCount;
     
     @OneToMany(mappedBy = "voteOption", cascade = CascadeType.ALL)
-    @JsonIgnore // Added this to break the cycle
+    @JsonIgnore 
     private List<Vote> votes;
     
     @ManyToOne
     @JoinColumn(name = "session_id")
-    @JsonIgnore // Added this to break the cycle
+    @JsonIgnore 
     private VotingSession session;
 }

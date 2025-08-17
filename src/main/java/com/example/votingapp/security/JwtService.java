@@ -25,7 +25,6 @@ public class JwtService {
 
     @PostConstruct
     public void init() {
-        // secret must be at least 256-bit for HS256
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 

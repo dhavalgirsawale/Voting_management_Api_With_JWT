@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.votingapp.model.User;
@@ -13,6 +14,7 @@ import com.example.votingapp.repository.UserRepository;
 
 
 @SpringBootApplication
+@EnableScheduling
 public class VotingappApplication {
 
 	public static void main(String[] args) {
@@ -34,5 +36,14 @@ public class VotingappApplication {
             }
         };
     }
+//	@Bean
+//	public CommandLineRunner generateHash(PasswordEncoder encoder) {
+//	    return args -> {
+//	        String rawPassword = "password123";
+//	        String hash = encoder.encode(rawPassword);
+//	        System.out.println("Generated hash: " + hash);
+//	    };
+//	}
+
 
 }

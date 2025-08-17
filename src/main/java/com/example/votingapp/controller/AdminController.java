@@ -1,9 +1,12 @@
 package com.example.votingapp.controller;
 
 import com.example.votingapp.model.User;
-import com.example.votingapp.service.AuthService;
+import com.example.votingapp.service.AdminMaintenanceService;
+import com.example.votingapp.service.OptionService;
+import com.example.votingapp.service.SessionService;
 import com.example.votingapp.service.UserImportService;
-import com.example.votingapp.service.VotingService;
+import com.example.votingapp.service.VoteService;
+//import com.example.votingapp.service.VotingService;
 
 import java.util.List;
 
@@ -16,35 +19,48 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/admin")
 public class AdminController {
     
+//    @Autowired
+//    private VotingService votingService;
+	@Autowired
+    private SessionService sessionService;
+
     @Autowired
-    private VotingService votingService;
+    private OptionService optionService;
+
+    @Autowired
+    private VoteService voteService;
+
+    @Autowired
+    private AdminMaintenanceService adminMaintenanceService;
     
     @Autowired
     private UserImportService userImportService;
     
     @PostMapping("/create-session")
-    public ResponseEntity<?> createSession(@RequestParam String title) {
-        Long sessionId = votingService.createSession(title);
-        return ResponseEntity.ok(sessionId);
+    public ResponseEntity<?> createSession(
+            @RequestParam String title,
+            @RequestParam int durationMinutes) {
+        Long sessionId = sessionService.createSession(title, durationMinutes);
+        return ResponseEntity.ok("Session " + sessionId + " created and will auto-close in " + durationMinutes + " minutes.");
     }
     
-    @PostMapping("/end-session")
-    public ResponseEntity<?> endSession(@RequestParam Long sessionId) {
-        votingService.endSession(sessionId);
-        return ResponseEntity.ok("Session ended");
-    }
+//    @PostMapping("/end-session")
+//    public ResponseEntity<?> endSession(@RequestParam Long sessionId) {
+//        votingService.endSession(sessionId);
+//        return ResponseEntity.ok("Session ended");
+//    }
     
     @PostMapping("/add-option")
     public ResponseEntity<?> addOption(
             @RequestParam Long sessionId,
             @RequestParam String option) {
-        votingService.addOption(sessionId, option);
+    	optionService.addOption(sessionId, option);
         return ResponseEntity.ok("Option added");
     }
     
     @GetMapping("/results")
     public ResponseEntity<?> getResults(@RequestParam Long sessionId) {
-        return ResponseEntity.ok(votingService.getResults(sessionId));
+        return ResponseEntity.ok(voteService.getResults(sessionId));
     }
     
     
@@ -59,13 +75,13 @@ public class AdminController {
 
     @PostMapping("/reset-votes")
     public ResponseEntity<?> resetVotes() {
-        votingService.resetAllSessions();
+    	adminMaintenanceService.resetAllSessions();
         return ResponseEntity.ok("All votes and results have been reset");
     }
 
     @PostMapping("/hard-reset")
     public ResponseEntity<?> hardReset() {
-        votingService.hardResetAllVotingData();
+    	adminMaintenanceService.hardResetAllVotingData();
         return ResponseEntity.ok("All voting data has been completely reset except users");
     }
     @PostMapping("/import-users")
@@ -74,15 +90,23 @@ public class AdminController {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Please select a file to upload");
             }
-            
-            if (!file.getContentType().equals("text/csv")) {
-                return ResponseEntity.badRequest().body("Only CSV files are allowed");
+
+            // Check file type
+            String fileName = file.getOriginalFilename();
+            if (fileName == null || 
+               !(fileName.endsWith(".csv") || fileName.endsWith(".xlsx") || fileName.endsWith(".xls"))) {
+                return ResponseEntity.badRequest().body("Only CSV or Excel files are allowed");
             }
-            
-            List<User> importedUsers = userImportService.importUsersFromCSV(file);
-            return ResponseEntity.ok(importedUsers.size() + " users imported successfully");
-            
+
+            // Import users
+            List<User> importedUsers = userImportService.importUsers(file);
+
+            return ResponseEntity.ok(
+                importedUsers.size() + " users imported successfully"
+            );
+
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body("Failed to import users: " + e.getMessage());
         }
     }

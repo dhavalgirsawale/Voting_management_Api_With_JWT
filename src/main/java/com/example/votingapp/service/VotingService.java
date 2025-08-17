@@ -4,8 +4,11 @@ package com.example.votingapp.service;
 import com.example.votingapp.model.*;
 import com.example.votingapp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,18 +26,35 @@ public class VotingService {
     @Autowired
     private VotingSessionRepository votingSessionRepository;
     
-    public Long createSession(String title) {
+    public Long createSession(String title, int durationMinutes) {
         VotingSession session = new VotingSession();
         session.setTitle(title);
+        session.setStartTime(LocalDateTime.now());
+        session.setEndTime(LocalDateTime.now().plusMinutes(durationMinutes)); // auto close
         return votingSessionRepository.save(session).getId();
     }
-    
-    public void endSession(Long sessionId) {
-        VotingSession session = votingSessionRepository.findById(sessionId)    //finding id it exist or not
-            .orElseThrow(() -> new RuntimeException("Session not found"));
-        session.setActive(false);
-        votingSessionRepository.save(session);
+    @Scheduled(fixedRate = 60000) // runs every 1 min
+    @Transactional
+    public void autoCloseExpiredSessions() {
+        List<VotingSession> sessions = votingSessionRepository.findByIsActiveTrue();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (VotingSession session : sessions) {
+            if (session.getEndTime() != null && now.isAfter(session.getEndTime())) {
+                session.setActive(false);
+                votingSessionRepository.save(session);
+                System.out.println("Session " + session.getId() + " closed automatically.");
+            }
+        }
     }
+
+    
+//    public void endSession(Long sessionId) {
+//        VotingSession session = votingSessionRepository.findById(sessionId)    //finding id it exist or not
+//            .orElseThrow(() -> new RuntimeException("Session not found"));
+//        session.setActive(false);
+//        votingSessionRepository.save(session);
+//    }
     
     public void addOption(Long sessionId, String option) {
         VotingSession session = votingSessionRepository.findById(sessionId)

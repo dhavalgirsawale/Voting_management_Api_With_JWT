@@ -27,13 +27,28 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;  // Injected encoder
     
+//    public User authenticateUser(String userId, String password) {
+//        User user = userRepository.findById(userId).orElse(null);
+//        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+//            return user;
+//        }
+//        return null;
+//    }
+    
     public User authenticateUser(String userId, String password) {
         User user = userRepository.findById(userId).orElse(null);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return user;
+        if (user != null) {
+        	System.out.println("Raw password from request: '" + password + "'");
+        	System.out.println("Length: " + password.length());
+        	System.out.println("DB hash: '" + user.getPassword() + "'");
+        	System.out.println("Length: " + user.getPassword().length());
+        	System.out.println("Match? " + passwordEncoder.matches(password, user.getPassword()));
+            
+            return passwordEncoder.matches(password, user.getPassword()) ? user : null;
         }
         return null;
     }
+
     
     public User authenticateAdmin(String userId, String password) {
         User user = authenticateUser(userId, password);

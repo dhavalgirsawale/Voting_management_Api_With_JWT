@@ -2,6 +2,8 @@ package com.example.votingapp.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,6 +18,9 @@ public class VotingSession {
     
     private String title;
     private boolean isActive = true;
+    
+    private LocalDateTime startTime = LocalDateTime.now();
+    private LocalDateTime endTime; // new field for auto-close
     
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
     @JsonIgnore // Add this to break the cycle

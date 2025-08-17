@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class User {
 	@Id
-    @Column(name = "user_id")  // Explicitly map to user_id column
+    @Column(name = "user_id")  
     private String userId;
-	@Column(name = "password", length = 60)  // BCrypt hashed passwords need 60 chars
+	@Column(name = "password", length = 60) 
 	private String password;
     private boolean isAdmin;
     private boolean canVote=true;

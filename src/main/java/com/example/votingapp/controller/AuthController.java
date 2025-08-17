@@ -34,8 +34,6 @@ public class AuthController {
         if (!user.isCanVote() && !user.isAdmin()) {
             return ResponseEntity.status(403).body("Voting access denied");
         }
-
-        // Build a Spring Security UserDetails shape just for token creation
         org.springframework.security.core.userdetails.UserDetails principal =
                 org.springframework.security.core.userdetails.User
                         .withUsername(user.getUserId())
@@ -46,8 +44,6 @@ public class AuthController {
         String token = jwtService.generateToken(principal, user.isAdmin());
         return ResponseEntity.ok(new LoginResponse(token, user.getUserId(), user.isAdmin(), user.isCanVote()));
     }
-
-    // Optional convenience endpoint to check if a user has voted in a session
     @GetMapping("/check-voted/{sessionId}")
     public ResponseEntity<?> hasUserVotedInSession(
             @RequestParam String userId,

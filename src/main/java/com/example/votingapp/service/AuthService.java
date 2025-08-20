@@ -25,7 +25,7 @@ public class AuthService {
 //    }
     
     @Autowired
-    private PasswordEncoder passwordEncoder;  // Injected encoder
+    private PasswordEncoder passwordEncoder;  
     
 //    public User authenticateUser(String userId, String password) {
 //        User user = userRepository.findById(userId).orElse(null);

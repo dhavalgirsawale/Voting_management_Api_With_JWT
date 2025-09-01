@@ -1,5 +1,6 @@
 package com.example.votingapp.service;
 
+import com.example.votingapp.dto.RegisterUserRequest;
 import com.example.votingapp.model.User;
 import com.example.votingapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ public class AuthService {
     
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder; 
     
 //    public User authenticateUser(String userId, String password) {
 //        return userRepository.findByUserIdAndPassword(userId, password);
@@ -23,9 +26,7 @@ public class AuthService {
 //    public void registerUser(User user) {
 //        userRepository.save(user);
 //    }
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;  // Injected encoder
+     
     
 //    public User authenticateUser(String userId, String password) {
 //        User user = userRepository.findById(userId).orElse(null);
@@ -48,7 +49,6 @@ public class AuthService {
         }
         return null;
     }
-
     
     public User authenticateAdmin(String userId, String password) {
         User user = authenticateUser(userId, password);
@@ -56,9 +56,21 @@ public class AuthService {
     }
     
     public void registerUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));  // Encode password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));  
         userRepository.save(user);
     }
-    
+    public User registerUser1(RegisterUserRequest request) {
+        if (userRepository.existsById(request.getUserId())) {
+            throw new IllegalArgumentException("User already exists with ID: " + request.getUserId());
+        }
+
+        User user = new User();
+        user.setUserId(request.getUserId().trim());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setAdmin(request.isAdmin());
+        user.setCanVote(!request.isAdmin()); 
+
+        return userRepository.save(user);
+    }
     
 }

@@ -1,32 +1,41 @@
 package com.example.votingapp.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 @Entity
 @Table(name = "voting_sessions")
-@Data
 public class VotingSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     private String title;
-    private boolean isActive = true;
+    private ZonedDateTime startTime;
+    private ZonedDateTime endTime;
     
-    private LocalDateTime startTime = LocalDateTime.now();
-    private LocalDateTime endTime; // new field for auto-close
+    @Transient
+    public boolean isActive() {
+        return endTime != null && ZonedDateTime.now(ZoneId.of("UTC")).isBefore(endTime);
+    }
+    
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public ZonedDateTime getStartTime() { return startTime; }
+    public void setStartTime(ZonedDateTime startTime) { this.startTime = startTime; }
+    public ZonedDateTime getEndTime() { return endTime; }
+    public void setEndTime(ZonedDateTime endTime) { this.endTime = endTime; }
     
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonIgnore // Add this to break the cycle
+    @JsonIgnore
     private List<VoteOption> options;
     
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    @JsonIgnore // Add this to break the cycle
+    @JsonIgnore
     private List<Vote> votes;
 }

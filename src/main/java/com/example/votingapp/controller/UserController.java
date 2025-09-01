@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    
-//    @Autowired
-//    private VotingService votingService;
+
 	@Autowired
     private SessionService sessionService;
 
@@ -45,4 +43,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    
 }

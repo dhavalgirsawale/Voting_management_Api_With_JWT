@@ -23,7 +23,6 @@ public class UserImportService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Main entry point
     public List<User> importUsers(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
 
@@ -36,7 +35,6 @@ public class UserImportService {
         }
     }
 
-    // CSV Import
     private List<User> importUsersFromCSV(MultipartFile file) throws IOException {
         List<User> users = new ArrayList<>();
         CSVFormat format = CSVFormat.DEFAULT.builder()
@@ -62,7 +60,6 @@ public class UserImportService {
         return saveValidUsers(users);
     }
 
-    // Excel Import
     private List<User> importUsersFromExcel(MultipartFile file) throws IOException {
         List<User> users = new ArrayList<>();
 
@@ -72,7 +69,6 @@ public class UserImportService {
             Sheet sheet = workbook.getSheetAt(0); // first sheet
             Iterator<Row> rowIterator = sheet.iterator();
 
-            // Skip header row
             if (rowIterator.hasNext()) rowIterator.next();
 
             while (rowIterator.hasNext()) {
@@ -93,7 +89,6 @@ public class UserImportService {
         return saveValidUsers(users);
     }
 
-    // Shared user parsing logic with validation
     private User parseUser(String userId, String rawPassword, String adminFlag) {
         if (userId == null || userId.isBlank()) {
             throw new IllegalArgumentException("Missing userId");
@@ -108,12 +103,11 @@ public class UserImportService {
         user.setUserId(userId.trim());
         user.setPassword(passwordEncoder.encode(rawPassword.trim()));
         user.setAdmin(isAdmin);
-        user.setCanVote(!isAdmin); // default rule: admins can’t vote
+        user.setCanVote(!isAdmin); 
 
         return user;
     }
 
-    // Save users with duplicate check
     private List<User> saveValidUsers(List<User> users) {
         List<User> savedUsers = new ArrayList<>();
         for (User user : users) {

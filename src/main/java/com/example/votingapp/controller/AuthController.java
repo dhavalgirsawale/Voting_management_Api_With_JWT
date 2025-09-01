@@ -1,5 +1,4 @@
 package com.example.votingapp.controller;
-
 import com.example.votingapp.dto.LoginRequest;
 import com.example.votingapp.dto.LoginResponse;
 import com.example.votingapp.model.User;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-//    private final VotingService votingService;
     private final JwtService jwtService;
     
     @Autowired
@@ -34,8 +32,6 @@ public class AuthController {
         if (!user.isCanVote() && !user.isAdmin()) {
             return ResponseEntity.status(403).body("Voting access denied");
         }
-
-        // Build a Spring Security UserDetails shape just for token creation
         org.springframework.security.core.userdetails.UserDetails principal =
                 org.springframework.security.core.userdetails.User
                         .withUsername(user.getUserId())
@@ -47,7 +43,6 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token, user.getUserId(), user.isAdmin(), user.isCanVote()));
     }
 
-    // Optional convenience endpoint to check if a user has voted in a session
     @GetMapping("/check-voted/{sessionId}")
     public ResponseEntity<?> hasUserVotedInSession(
             @RequestParam String userId,
